@@ -87,9 +87,6 @@ jobs:
                       # Режем только явный мусор вроде ссылок на комменты
                       if clean_summary.lower() in ['comments', 'discussion', '']:
                           clean_summary = ''
-                      
-                      if len(clean_summary) > 160:
-                          clean_summary = clean_summary[:160] + '...'
 
                       articles.append({
                           "source": feed['name'],
