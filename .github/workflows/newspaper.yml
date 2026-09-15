@@ -59,7 +59,7 @@ jobs:
               {"name": "Ubuntu Security Notices", "url": "https://ubuntu.com/security/notices/rss.xml"},
               {"name": "Exploit-DB RSS", "url": "https://www.exploit-db.com/rss.xml"},
               {"name": "OpenNet (Программы)", "url": "https://www.opennet.ru/opennews/opennews_prog.rss"},
-              {"name": "OpenNet (Безопасность)", "url": "https://www.opennet.ru/opennews/opennews_sec.rss"}
+              {"name": "OpenNet (Безопасность)", "url": "https://www.opennet.ru/opennews/opennews_sec.rss"},
               {"name": "LOR", "url": "https://www.linux.org.ru/section-rss.jsp?section=1"},
               {"name": "FreeBSD Security", "url": "https://www.freebsd.org/security/feed.xml"},
               {"name": "LKML (Linux Kernel Mailing List)", "url": "https://lore.kernel.org/lkml/new.atom"}
