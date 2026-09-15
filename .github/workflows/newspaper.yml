@@ -36,6 +36,7 @@ jobs:
           import feedparser
           import time
           import os
+          import re
           from datetime import datetime, timezone
 
           feeds = [
@@ -77,11 +78,19 @@ jobs:
                       if dt_struct and timestamp < cutoff:
                           continue
 
+                      # Вытаскиваем и чистим синопсис от HTML-мусора
+                      raw_summary = getattr(entry, 'summary', getattr(entry, 'description', ''))
+                      clean_summary = re.sub(r'<[^<]+?>', '', raw_summary).strip()
+                      clean_summary = ' '.join(clean_summary.split()) # убираем лишние переносы и пробелы
+                      if len(clean_summary) > 160:
+                          clean_summary = clean_summary[:160] + '...'
+
                       articles.append({
                           "source": feed['name'],
                           "title": getattr(entry, 'title', 'No Title'),
                           "link": getattr(entry, 'link', '#'),
                           "date": getattr(entry, 'published', getattr(entry, 'updated', '')),
+                          "summary": clean_summary,
                           "timestamp": timestamp
                       })
               except Exception as e:
@@ -91,7 +100,7 @@ jobs:
           articles.sort(key=lambda x: x['timestamp'], reverse=True)
           print(f"Всего отобрано свежих статей: {len(articles)}")
 
-          # Ультра-простой HTML, понятный даже браузеру Symbian / старой Опере
+          # HTML под Symbian / старую Оперу
           html_content = """<!DOCTYPE html>
           <html>
           <head>
@@ -102,7 +111,8 @@ jobs:
                   a { color: #0ff; text-decoration: underline; }
                   .article { margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
                   .source { font-size: 11px; color: #ff0; text-transform: uppercase; }
-                  .time { font-size: 10px; color: #888; }
+                  .snippet { font-size: 11px; color: #aaa; margin-top: 4px; }
+                  .time { font-size: 10px; color: #888; margin-top: 4px; }
               </style>
           </head>
           <body>
@@ -110,10 +120,12 @@ jobs:
           """
 
           for art in articles:
+              snippet_div = f'<div class="snippet">{art["summary"]}</div>' if art['summary'] else ''
               html_content += f"""
               <div class="article">
                   <div class="source">[{art['source']}]</div>
                   <div><a href="{art['link']}">{art['title']}</a></div>
+                  {snippet_div}
                   <div class="time">{art['date']}</div>
               </div>
               """
