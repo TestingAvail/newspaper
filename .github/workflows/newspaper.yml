@@ -39,7 +39,9 @@ jobs:
           import re
           import html
           from datetime import datetime, timezone
-
+          
+          update_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+          
           feeds = [
               {"name": "Hacker News", "url": "https://news.ycombinator.com/rss"},
               {"name": "Habr (Главная)", "url": "https://habr.com/ru/rss/all/"},
@@ -104,22 +106,23 @@ jobs:
           print(f"Всего отобрано свежих статей: {len(articles)}")
 
           # HTML под Symbian / старую Оперу
-          html_content = """<!DOCTYPE html>
+          html_content = f"""<!DOCTYPE html>
           <html>
           <head>
               <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
               <title>Digest</title>
               <style>
-                  body { background-color: #000; color: #0f0; font-family: monospace; margin: 10px; }
-                  a { color: #0ff; text-decoration: underline; }
-                  .article { margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
-                  .source { font-size: 11px; color: #ff0; text-transform: uppercase; }
-                  .snippet { font-size: 11px; color: #aaa; margin-top: 4px; }
-                  .time { font-size: 10px; color: #888; margin-top: 4px; }
+                  body {{ background-color: #000; color: #0f0; font-family: monospace; margin: 10px; }}
+                  a {{ color: #0ff; text-decoration: underline; }}
+                  .article {{ margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }}
+                  .source {{ font-size: 11px; color: #ff0; text-transform: uppercase; }}
+                  .snippet {{ font-size: 11px; color: #aaa; margin-top: 4px; }}
+                  .time {{ font-size: 10px; color: #888; margin-top: 4px; }}
+                  .digest-time {{ font-size: 11px; color: #888; font-weight: normal; }}
               </style>
           </head>
           <body>
-              <h2>== CYBERNEWS DIGEST ==</h2>
+              <h2>== CYBERNEWS DIGEST == <span class="digest-time">[{update_time}]</span></h2>
           """
 
           for art in articles:
