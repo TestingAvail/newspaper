@@ -37,6 +37,7 @@ jobs:
           import time
           import os
           import re
+          import html
           from datetime import datetime, timezone
 
           feeds = [
@@ -78,10 +79,15 @@ jobs:
                       if dt_struct and timestamp < cutoff:
                           continue
 
-                      # Вытаскиваем и чистим синопсис от HTML-мусора
                       raw_summary = getattr(entry, 'summary', getattr(entry, 'description', ''))
-                      clean_summary = re.sub(r'<[^<]+?>', '', raw_summary).strip()
-                      clean_summary = ' '.join(clean_summary.split()) # убираем лишние переносы и пробелы
+                      clean_summary = re.sub(r'<[^<]+?>', '', raw_summary)
+                      clean_summary = html.unescape(clean_summary)
+                      clean_summary = ' '.join(clean_summary.split()).strip()
+                      
+                      # Режем только явный мусор вроде ссылок на комменты
+                      if clean_summary.lower() in ['comments', 'discussion', '']:
+                          clean_summary = ''
+                      
                       if len(clean_summary) > 160:
                           clean_summary = clean_summary[:160] + '...'
 
