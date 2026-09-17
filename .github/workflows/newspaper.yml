@@ -166,11 +166,21 @@ jobs:
           SHA512: $SHA512_VAL
           EOF
 
-          NOTE_BODY="### Контрольные суммы свежего выпуска:\n\n\`\`\`\nMD5:    $MD5_VAL\nSHA1:   $SHA1_VAL\nSHA256: $SHA256_VAL\nSHA512: $SHA512_VAL\n\`\`\`"
+          # Пишем описание релиза во временный файл без ебли с экранированием
+          cat << EOF > release_notes.md
+          ### Контрольные суммы свежего выпуска:
+
+          \`\`\`
+          MD5:    $MD5_VAL
+          SHA1:   $SHA1_VAL
+          SHA256: $SHA256_VAL
+          SHA512: $SHA512_VAL
+          \`\`\`
+          EOF
 
           gh release create "$TAG_NAME" \
             --title "Cybernews Digest [$TAG_NAME]" \
-            --notes "$NOTE_BODY" \
+            --notes-file release_notes.md \
             "$FILE#index.html" \
             "public/checksums.txt#checksums.txt"
 
