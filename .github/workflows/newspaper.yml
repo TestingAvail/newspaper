@@ -147,6 +147,33 @@ jobs:
           print("Newspaper generated successfully.")
           EOF
 
+      - name: Create Release and Checksums
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="digest-$(date -u +'%Y%m%d-%H%M')"
+          FILE="public/index.html"
+          
+          MD5_VAL=$(md5sum "$FILE" | awk '{print $1}')
+          SHA1_VAL=$(sha1sum "$FILE" | awk '{print $1}')
+          SHA256_VAL=$(sha256sum "$FILE" | awk '{print $1}')
+          SHA512_VAL=$(sha512sum "$FILE" | awk '{print $1}')
+          
+          cat << EOF > public/checksums.txt
+          MD5:    $MD5_VAL
+          SHA1:   $SHA1_VAL
+          SHA256: $SHA256_VAL
+          SHA512: $SHA512_VAL
+          EOF
+
+          NOTE_BODY="### Контрольные суммы свежего выпуска:\n\n\`\`\`\nMD5:    $MD5_VAL\nSHA1:   $SHA1_VAL\nSHA256: $SHA256_VAL\nSHA512: $SHA512_VAL\n\`\`\`"
+
+          gh release create "$TAG_NAME" \
+            --title "Cybernews Digest [$TAG_NAME]" \
+            --notes "$NOTE_BODY" \
+            "$FILE#index.html" \
+            "public/checksums.txt#checksums.txt"
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
